@@ -4,6 +4,8 @@ import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as path from 'path';
 import {promises as fs} from 'fs';
+import * as fs from 'fs'
+import * as os from 'os'
 
 const OPAM_BINARY_URL_LINUX = 'https://github.com/ocaml/opam/releases/download/2.0.5/opam-2.0.5-x86_64-linux';
 const OPAM_BINARY_URL_DARWIN = 'https://github.com/ocaml/opam/releases/download/2.0.5/opam-2.0.5-x86_64-darwin';
@@ -37,7 +39,7 @@ async function setup_opam() {
   core.debug(`Created ${local_bin}`)
   await io.mv(opam_download_path, opam_path);
   core.debug(`Moving opam binary to ${local_bin}`)
-  core.addPath(local_bin);
+  addPath(local_bin)
   core.debug("Running opam init")
   await exec.exec("opam", ["init", "-y", "--disable-sandboxing", "--bare"]);
   core.debug("opam is initialised")
@@ -50,8 +52,24 @@ async function setup_ocaml() {
   const opam_switch = path.join(dot_opam, ocaml_version);
   const opam_bin = path.join(opam_switch, 'bin');
   // await tc.cacheDir(opam_switch, "OCaml", ocaml_version);
-  core.addPath(opam_bin);
+  addPath(opam_bin);
   core.debug("OCaml is installed");
+}
+
+function addPath(path: string): void {
+  const pathEnvFile = process.env['GITHUB_PATH']
+  if (!pathEnvFile) {
+    throw new Error(
+      'Unable to find file for env variable GITHUB_PATH'
+    )
+  }
+  if (!fs.existsSync(path)) {
+    throw new Error(`${path} does not exist`)
+  }
+
+  fs.appendFileSync(pathEnvFile, `${path}${os.EOL}`, {
+    encoding: 'utf8'
+  })
 }
 
 async function run() {
