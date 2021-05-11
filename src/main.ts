@@ -3,7 +3,6 @@ import * as tc from '@actions/tool-cache';
 import * as exec from '@actions/exec';
 import * as io from '@actions/io';
 import * as path from 'path';
-import {promises as fs} from 'fs';
 import * as fs from 'fs'
 import * as os from 'os'
 
@@ -33,7 +32,7 @@ const dot_opam = path.join(process.env.HOME!, ".opam");
 async function setup_opam() {
   const opam_download_path = await tc.downloadTool(get_opam_url());
   core.debug(`Downloaded opam ${OPAM_VERSION} to ${opam_download_path}`);
-  await fs.chmod(opam_download_path, 0o755); // set executable
+  await fs.promises.chmod(opam_download_path, 0o755); // set executable
   core.debug(`Setting opam executable`)
   await io.mkdirP(local_bin);
   core.debug(`Created ${local_bin}`)
