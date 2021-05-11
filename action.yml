@@ -1,4 +1,4 @@
-name: 'setup-opam-ocaml'
+name: 'setup-opam-and-ocaml'
 description: 'Setup opam and OCaml'
 author: 'Fangyi Zhou'
 inputs:
